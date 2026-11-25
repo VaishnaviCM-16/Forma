@@ -1,0 +1,43 @@
+name: FORMA CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Test live WebSocket synchronization
+        run: |
+          pnpm dev > /tmp/forma-dev.log 2>&1 &
+          echo $! > /tmp/forma-dev.pid
+          for attempt in $(seq 1 60); do
+            if curl --fail --silent http://127.0.0.1:3001/api/health >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:3001/api/health
+          pnpm test:integration
+      - if: always()
+        name: Stop dev services
+        run: if [ -f /tmp/forma-dev.pid ]; then kill "$(cat /tmp/forma-dev.pid)" || true; fi
+      - run: pnpm build
