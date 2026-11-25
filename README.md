@@ -10,7 +10,6 @@ FORMA is a polished, anonymous collaborative canvas portfolio demo. Open a board
 
 ![FORMA live canvas editor](./docs/forma-editor-desktop.png)
 
-![FORMA mobile canvas editor](./docs/forma-editor-mobile.png)
 
 ## Features
 
