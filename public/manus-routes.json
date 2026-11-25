@@ -1,0 +1,1 @@
+{"routes":[{"path":"/","title":"FORMA — Collaborative Canvas"},{"path":"/canvas/:boardId","title":"FORMA Canvas"}]}
