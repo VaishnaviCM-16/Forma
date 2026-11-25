@@ -1,0 +1,30 @@
+%%{init: {"theme":"base","themeVariables":{"background":"#0b0b0e","primaryColor":"#15141a","primaryTextColor":"#f4f1e9","primaryBorderColor":"#b29aff","secondaryColor":"#17161d","secondaryTextColor":"#f4f1e9","secondaryBorderColor":"#82d8c6","tertiaryColor":"#17151f","tertiaryTextColor":"#f4f1e9","tertiaryBorderColor":"#f1a47e","lineColor":"#8a8491","fontFamily":"Manrope, sans-serif"}}}%%
+flowchart LR
+  subgraph CLIENTS["BROWSER CLIENTS"]
+    direction TB
+    A["Browser A<br/>React + Canvas 2D"]
+    B["Browser B<br/>React + Canvas 2D"]
+  end
+  subgraph DOCUMENT["LIVE ROOM (PROCESS MEMORY)"]
+    direction TB
+    Y["Yjs shared maps<br/>CRDT document updates"]
+    P["Yjs Awareness<br/>ephemeral cursors + selection"]
+  end
+  W["Node.js · Express<br/>HTTP API + WebSocket relay"]
+  LOSS["Server restart<br/>clears active rooms"]
+  A <-->|"Yjs updates"| W
+  B <-->|"Yjs updates"| W
+  A -->|"Board API"| W
+  B -->|"Board API"| W
+  W -->|"Room document state"| Y
+  W -.->|"Ephemeral presence"| P
+  W -.->|"No persistent snapshot"| LOSS
+  classDef client fill:#15141a,stroke:#b29aff,color:#f4f1e9,stroke-width:1.5px
+  classDef document fill:#151719,stroke:#82d8c6,color:#f4f1e9,stroke-width:1.5px
+  classDef service fill:#1a1721,stroke:#b29aff,color:#f4f1e9,stroke-width:2px
+  classDef warning fill:#271b17,stroke:#f1a47e,color:#f4f1e9,stroke-width:1.5px
+  class A,B client
+  class Y,P document
+  class W service
+  class LOSS warning
+  linkStyle default stroke:#8a8491,stroke-width:1.5px,color:#aaa4b0
